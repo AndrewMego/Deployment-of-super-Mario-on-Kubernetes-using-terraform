@@ -1,36 +1,55 @@
 pipeline {
     agent any
+
     stages {
         stage('Git_Project_File') {
-              steps {
-                // Use Jenkins' built-in git step
-                sh ''' git clone 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git' '''
-                }
-        }
-          stage('Build_Terra') {
             steps {
-                // Add your build steps here, e.g., running Terraform commands
-                sh '''
-                cd Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF && terraform init && terraform apply && echo "Done"
-                '''
-            }
-        }
-           stage('Build_AWS') {
-            steps {
-                // Add your build steps here, e.g., running Terraform commands
-                sh ''' aws eks update-kubeconfig --name EKS_CLOUD --region ap-south-1 ''' 
-            }
-        }
-        
-           stage('Build_Kuber') {
-            steps {
-                // Add your build steps here, e.g., running Terraform commands
-                sh ''' cd .. '''
-                sh ''' kubectl apply -f deployment.yaml '''
-                sh ''' kubectl apply -f service.yaml '''
-                
+                // Clone the GitHub repository
+                git url: 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git', branch: 'master'
             }
         }
 
+        stage('Terraform Init and Apply') {
+            steps {
+                script {
+                    // Initialize and apply Terraform using the Terraform plugin
+                    terraformInit(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF')
+                    terraformApply(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF', varFile: '')
+                }
+            }
+        }
+
+        stage('Configure AWS EKS') {
+            steps {
+                // Configure AWS EKS using the AWS CLI
+                sh '''
+                aws eks update-kubeconfig --name EKS_CLOUD --region ap-south-1
+                '''
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Deploy application to Kubernetes using kubectl
+                dir('Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF') {
+                    sh '''
+                    kubectl apply -f deployment.yaml
+                    kubectl apply -f service.yaml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed"
+        }
+        success {
+            echo "Pipeline succeeded"
+        }
+        failure {
+            echo "Pipeline failed"
+        }
     }
 }
