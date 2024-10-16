@@ -12,9 +12,12 @@ pipeline {
         stage('Terraform Init and Apply') {
             steps {
                 script {
-                    // Initialize and apply Terraform using the Terraform plugin
-                    terraformInit(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF')
-                    terraformApply(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF', varFile: '')
+                    sh '''
+                    cd Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF && terraform init && terraform apply && echo "Done"
+                       '''
+                           // Initialize and apply Terraform using the Terraform plugin
+                    //terraformInit(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF')
+                    //terraformApply(dir: 'Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF', varFile: '')
                 }
             }
         }
