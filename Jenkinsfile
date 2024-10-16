@@ -4,8 +4,8 @@ pipeline {
         stage('Git_Project_File') {
               steps {
                 // Use Jenkins' built-in git step
-                git url: 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git', branch: 'main'
-            }
+                sh ''' git clone 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git' '''
+                }
         }
           stage('Build_Terra') {
             steps {
