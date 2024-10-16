@@ -5,7 +5,7 @@ pipeline {
         stage('Git_Project_File') {
             steps {
                 // Clone the GitHub repository
-                git url: 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git', branch: 'master'
+                git url: 'https://github.com/AndrewMego/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git', branch: 'main'
             }
         }
 
